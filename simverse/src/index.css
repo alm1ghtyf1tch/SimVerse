@@ -65,4 +65,28 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+
+
+/* Make your intended palette explicit */
+:root { color-scheme: dark; }
+body { margin: 0; background: #0b0f1a; color: #eaeaea; }
+
+/* Opt out of Windows forced-colors overrides */
+@media (forced-colors: active) {
+  :root { forced-color-adjust: none; }
+  body, #root, canvas, button, input, select {
+    forced-color-adjust: none;
+  }
+}
+
+:root { color-scheme: dark; }
+body { margin: 0; background: #0b0f1a; color: #eaeaea; }
+
+@media (forced-colors: active) {
+  :root, body, #root, canvas, button, input, select {
+    forced-color-adjust: none;
+  }
+}
+
+
 }

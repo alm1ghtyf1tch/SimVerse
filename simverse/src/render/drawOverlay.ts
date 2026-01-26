@@ -1,10 +1,12 @@
 import type { Annotation } from "../models/Annotation";
 
-export function drawOverlay(ctx: CanvasRenderingContext2D, annotations: Annotation[]) {
+export function drawOverlay(ctx: CanvasRenderingContext2D, annotations: Annotation[], preview?: Annotation | null) {
   ctx.save();
   ctx.lineWidth = 2;
 
-  for (const a of annotations) {
+  const list = preview ? [...annotations, preview] : annotations;
+
+  for (const a of list) {
     if (a.type === "region") {
       ctx.strokeStyle = "rgba(255,255,255,0.35)";
       ctx.beginPath();
@@ -35,7 +37,6 @@ export function drawOverlay(ctx: CanvasRenderingContext2D, annotations: Annotati
 
     if (a.type === "spiral") {
       ctx.strokeStyle = "rgba(255,255,255,0.45)";
-      // Minimal spiral-ish drawing
       const turns = 2.5;
       const steps = 60;
       ctx.beginPath();

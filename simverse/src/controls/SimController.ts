@@ -24,14 +24,8 @@ function norm(v: Vec2): Vec2 {
 function sub(a: Vec2, b: Vec2): Vec2 {
   return { x: a.x - b.x, y: a.y - b.y };
 }
-function add(a: Vec2, b: Vec2): Vec2 {
-  return { x: a.x + b.x, y: a.y + b.y };
-}
 function mul(v: Vec2, s: number): Vec2 {
   return { x: v.x * s, y: v.y * s };
-}
-function perp(v: Vec2): Vec2 {
-  return { x: -v.y, y: v.x };
 }
 function insideRegion(p: Vec2, region?: RegionCircle) {
   if (!region) return true;
@@ -71,12 +65,11 @@ export class SimController {
 
   reset(paramsOverride?: Partial<Params>) {
     const next: Params = { ...this.params, ...(paramsOverride ?? {}) };
-    // Deep fields
     if (paramsOverride?.gravity) next.gravity = { ...paramsOverride.gravity };
 
     this.params = structuredClone(next);
 
-    // Drop forces/annotations on reset (stable demo behavior)
+    // Reset in Phase 1: clear everything for deterministic behavior
     this.forceFields = [];
     this.annotations = [];
 
@@ -92,21 +85,17 @@ export class SimController {
   setAirFriction(value: number) {
     const v = clamp(value, 0, 0.08);
     this.params.airFriction = v;
-    for (const b of this.worldState.balls) {
-      b.frictionAir = v;
-    }
+    for (const b of this.worldState.balls) b.frictionAir = v;
   }
 
   setRestitution(value: number) {
     const v = clamp(value, 0, 1);
     this.params.restitution = v;
-    for (const b of this.worldState.balls) {
-      b.restitution = v;
-    }
+    for (const b of this.worldState.balls) b.restitution = v;
   }
 
   spawnBalls(count: number) {
-    const maxAdd = 200; // hard-ish bound for stability
+    const maxAdd = 200;
     const n = clamp(Math.floor(count), 1, maxAdd);
 
     const r = this.params.ballRadius;
@@ -133,12 +122,29 @@ export class SimController {
     this.worldState.balls.push(...balls);
   }
 
+  // IMPORTANT: clear forces only (do NOT nuke annotations)
   clearForces() {
     this.forceFields = [];
-    this.annotations = this.annotations.filter(a => a.type !== "arrow" && a.type !== "spiral" && a.type !== "region");
   }
 
-  addWind(direction: Vec2, strength01: number, region?: RegionCircle) {
+  removeAnnotation(annotationId: string) {
+    // remove the annotation
+    this.annotations = this.annotations.filter(a => a.id !== annotationId);
+
+    // remove any forces created by that annotation OR constrained by that region annotation
+    this.forceFields = this.forceFields.filter(ff =>
+      ff.annotationId !== annotationId && ff.regionAnnotationId !== annotationId
+    );
+  }
+
+  // --- Force Field creators (linkable) ---
+  addWind(
+    direction: Vec2,
+    strength01: number,
+    region?: RegionCircle,
+    annotationId?: string,
+    regionAnnotationId?: string
+  ) {
     const dir = norm(direction);
     const field: ForceField = {
       id: uid("ff"),
@@ -146,38 +152,44 @@ export class SimController {
       strength: clamp(strength01, 0, 1),
       direction: dir,
       region,
+      annotationId,
+      regionAnnotationId,
     };
     this.forceFields.push(field);
     return field.id;
   }
 
-  addAttractor(center: Vec2, strength01: number, region?: RegionCircle) {
+  addAttractor(center: Vec2, strength01: number, region?: RegionCircle, annotationId?: string, regionAnnotationId?: string) {
     const field: ForceField = {
       id: uid("ff"),
       type: "attractor",
       strength: clamp(strength01, 0, 1),
       center,
       region,
+      annotationId,
+      regionAnnotationId,
     };
     this.forceFields.push(field);
     return field.id;
   }
 
-  addVortex(center: Vec2, strength01: number, clockwise: boolean, region?: RegionCircle) {
+  addVortex(center: Vec2, strength01: number, clockwise: boolean, region?: RegionCircle, annotationId?: string, regionAnnotationId?: string) {
     const field: ForceField = {
       id: uid("ff"),
       type: "vortex",
       strength: clamp(strength01, 0, 1) * (clockwise ? 1 : -1),
       center,
       region,
+      annotationId,
+      regionAnnotationId,
     };
     this.forceFields.push(field);
     return field.id;
   }
 
-  // Phase 1: debug annotation helpers (mouse drawing comes later)
+  // --- Annotation helpers (mouse drawing will call these) ---
   addRegionAnnotation(center: Vec2, radius: number) {
-    const ann: Annotation = { id: uid("ann"), type: "region", center, radius: clamp(radius, 20, 400) };
+    const ann: Annotation = { id: uid("ann"), type: "region", center, radius: clamp(radius, 20, 450) };
     this.annotations.push(ann);
     return ann.id;
   }
@@ -188,8 +200,13 @@ export class SimController {
     return ann.id;
   }
 
+  addSpiralAnnotation(center: Vec2, radius: number, clockwise: boolean) {
+    const ann: Annotation = { id: uid("ann"), type: "spiral", center, radius: clamp(radius, 20, 450), clockwise };
+    this.annotations.push(ann);
+    return ann.id;
+  }
+
   step(dtMs: number) {
-    // Apply force fields BEFORE physics step
     this.applyForceFields();
     stepWorld(this.worldState, dtMs);
   }
@@ -216,7 +233,6 @@ export class SimController {
           const toC = sub(f.center, p);
           const dist = clamp(len(toC), 30, 800);
           const dir = norm(toC);
-          // stronger when closer, but bounded
           const mag = (f.strength * FORCE_SCALE_ATTRACT) * (200 / dist);
           Matter.Body.applyForce(b, b.position, mul(dir, mag));
         }
@@ -224,7 +240,7 @@ export class SimController {
         if (f.type === "vortex" && f.center) {
           const toC = sub(p, f.center);
           const dist = clamp(len(toC), 40, 900);
-          const tangential = norm(perp(toC));
+          const tangential = norm({ x: -toC.y, y: toC.x });
           const mag = (Math.abs(f.strength) * FORCE_SCALE_VORTEX) * (250 / dist);
           const signed = f.strength >= 0 ? 1 : -1;
           Matter.Body.applyForce(b, b.position, mul(tangential, mag * signed));
