@@ -272,6 +272,7 @@ Open source - feel free to use, modify, and distribute.
 ## Author
 
 **Abilmansur Inkarbay**
+
 - Email: [segathess@gmail.com](mailto:segathess@gmail.com)
 - Telegram: [@zxcreizz](https://t.me/zxcreizz)
 - Instagram: [@psiblades8512](https://instagram.com/psiblades8512)
