@@ -5,12 +5,14 @@ An interactive physics simulation playground powered by AI. Sketch regions and f
 ## Features
 
 ### 🎨 Interactive Canvas
+
 - **Real-time 2D Physics** - Matter.js-powered physics engine with gravity, friction, restitution, and wind forces
 - **Sketch Annotations** - Draw regions and force vectors directly on the canvas
 - **Floating Lines Background** - Beautiful WebGL-rendered animated background using Three.js
 - **Smooth Interaction** - Play mode to observe, Region/Arrow to sketch, Delete to clear
 
 ### 🤖 AI-Powered Commands
+
 - **Natural Language Processing** - Describe what you want in plain English
 - **Dual Mode Support**:
   - **Direct Mode**: Uses real Google Gemini 3 API for intelligent responses
@@ -18,6 +20,7 @@ An interactive physics simulation playground powered by AI. Sketch regions and f
 - **Smart Action Execution** - AI translates commands into physics parameter changes and force field modifications
 
 ### ⚙️ Customizable Physics
+
 - **Gravity Y** - Control downward acceleration (0-0.8)
 - **Air Friction** - Dampen motion over time (0-0.06)
 - **Restitution** - Bounce energy (0-1.0)
@@ -25,13 +28,16 @@ An interactive physics simulation playground powered by AI. Sketch regions and f
 - **Preset Configurations** - Quick-apply tested physics states
 
 ### 🎯 Demo Buttons
+
 Quick-start commands for common scenarios:
+
 - **Swirl + Stabilize** - Creates swirling motion then dampens it
 - **Drift Right** - Applies rightward wind force
 - **Chaos + Spawn** - Creates chaotic motion with 10 new balls
 - **Calm Reset** - Returns to a peaceful, stable state
 
 ### 📊 Live Statistics
+
 - Real-time ball count, sketch count, and force field count
 - Current AI mode indicator (Direct/Mock)
 - Performance monitoring
@@ -39,6 +45,7 @@ Quick-start commands for common scenarios:
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 16+
 - npm or yarn
 - (Optional) Google Gemini API key from [Google AI Studio](https://aistudio.google.com)
@@ -54,11 +61,13 @@ npm install
 ### Configuration
 
 #### Option 1: Use Mock Mode (No Setup Required)
+
 1. Start the dev server: `npm run dev`
 2. Toggle to **Mock Mode** in the Status section
 3. Start experimenting!
 
 #### Option 2: Use Direct Mode (Requires API Key)
+
 1. Get your Gemini 3 API key from [Google AI Studio](https://aistudio.google.com)
 2. Create `.env.local` in the project root:
    ```
@@ -71,12 +80,15 @@ npm install
 ### Running
 
 **Development:**
+
 ```bash
 npm run dev
 ```
+
 Opens at `http://localhost:5173`
 
 **Build for Production:**
+
 ```bash
 npm run build
 npm run preview
@@ -85,6 +97,7 @@ npm run preview
 ## How to Use
 
 ### Basic Workflow
+
 1. **Observe** (Play mode) - Watch the simulation
 2. **Sketch** (Region/Arrow modes):
    - **Draw Region**: Click and drag to create a circular region
@@ -96,6 +109,7 @@ npm run preview
 4. **See Results** - Watch the AI adjust physics parameters and apply forces
 
 ### Controls
+
 - **Play** - Observation mode (no sketching)
 - **Draw Region** - Create circular regions (click-drag)
 - **Draw Arrow** - Create force vectors (click-drag)
@@ -108,12 +122,14 @@ npm run preview
 ### AI Modes
 
 #### Direct Mode ✨
+
 - Real Gemini 3 API responses
 - Intelligent, context-aware behavior
 - Requires API key
 - Subject to rate limits
 
 #### Mock Mode 🎭
+
 - Simulated responses with pattern matching
 - Works instantly without API key
 - Perfect for demos and testing
@@ -124,20 +140,24 @@ Toggle between modes anytime using the **Switch** button in the Status section.
 ## Tech Stack
 
 ### Frontend
+
 - **React 18** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool with HMR
 - **Three.js** - WebGL rendering for animated background
 
 ### Physics & Simulation
+
 - **Matter.js** - 2D rigid body physics engine
 - **Canvas 2D API** - Real-time rendering
 
 ### AI Integration
+
 - **Google Gemini 3 API** - Natural language processing
 - **Custom Adapter** - API abstraction layer
 
 ### Desktop (Electron)
+
 - **Electron** - Cross-platform desktop app
 - **electron-builder** - App packaging and distribution
 
@@ -186,6 +206,7 @@ simverse/
 ## Environment Variables
 
 Create `.env.local` (not committed to git):
+
 ```
 VITE_GEMINI_API_KEY=your_api_key_here
 ```
@@ -204,11 +225,13 @@ VITE_GEMINI_API_KEY=your_api_key_here
 ## AI Model Information
 
 Currently uses **Google Gemini 3 API** for:
+
 - Natural language command interpretation
 - Physics simulation recommendations
 - Parameter optimization suggestions
 
 The AI can understand commands like:
+
 - "Create a swirling motion"
 - "Make it more chaotic"
 - "Stabilize everything"
