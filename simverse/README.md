@@ -269,6 +269,14 @@ Open source - feel free to use, modify, and distribute.
 - **Graphics**: Three.js and Canvas 2D
 - **Framework**: React & Vite team
 
+## Author
+
+**Abilmansur Inkarbay**
+- Email: [segathess@gmail.com](mailto:segathess@gmail.com)
+- Telegram: [@zxcreizz](https://t.me/zxcreizz)
+- Instagram: [@psiblades8512](https://instagram.com/psiblades8512)
+- LinkedIn: [Abilmansur Inkarbay](https://www.linkedin.com/in/abilmansur-inkarbay-5a817434b/)
+
 ---
 
 Made with ❤️ for physics simulation and AI exploration.
